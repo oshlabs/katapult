@@ -85,3 +85,11 @@ config STATUS_LED_PIN
 config HAVE_CHIPID
     bool
     default n
+
+config HAVE_GPIO_SPI
+    bool
+    default n
+
+config ENABLE_SDCARD
+    bool
+    default n

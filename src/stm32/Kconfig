@@ -174,6 +174,58 @@ config STM32F103GD_DISABLE_SWD
         and PA14 pins from being available. Selecting this option
         disables SWD at startup and thus makes these pins available.
 
+config SDCARD_SPI
+    bool
+
+menu "SD Card Configuration"
+    depends on HAVE_GPIO_SPI
+config ENABLE_SDCARD
+    bool "Enable SD Card"
+    default n
+choice
+    depends on ENABLE_SDCARD
+    prompt "Interface"
+    config STM32_SD_SPI_1
+        bool "SPI1 (on PA6/PA7/PA5)"
+        select SDCARD_SPI
+    config STM32_SD_SPI_1A
+        bool "SPI1A (on PB4/PB5/PB3)"
+        select SDCARD_SPI
+    config STM32_SD_SPI_2
+        bool "SPI2 (on PB14/PB15/PB13)"
+        select SDCARD_SPI
+    config STM32_SD_SPI_2A
+        bool "SPI2A (on PC2/PC3/PB10)" if !MACH_STM32F1
+        select SDCARD_SPI
+    config STM32_SD_SPI_2B
+        bool "SPI2B (on PI2/PI3/PI1)" if MACH_STM32F405 || MACH_STM32F407
+        select SDCARD_SPI
+    config STM32_SD_SPI_3
+        bool "SPI3 (on PB4/PB5/PB3)" if !MACH_STM32F0
+        select SDCARD_SPI
+    config STM32_SD_SPI_3A
+        bool "SPI3A (on PC11/PC12/PC10)" if MACH_STM32F4
+        select SDCARD_SPI
+    config STM32_SD_SPI_4
+        bool "SPI4 (on PE13,PE14,PE12)" if MACH_STM32F401 || MACH_STM32F446
+        select SDCARD_SPI
+endchoice
+config SD_SPI_CS_PIN
+    depends on ENABLE_SDCARD
+    string "SPI CS Pin"
+endmenu
+
+config SD_SPI_BUS
+    int
+    default 0 if STM32_SD_SPI_2
+    default 1 if STM32_SD_SPI_1
+    default 2 if STM32_SD_SPI_1A
+    default 3 if STM32_SD_SPI_2A
+    default 4 if STM32_SD_SPI_3
+    default 5 if STM32_SD_SPI_3A
+    default 6 if STM32_SD_SPI_4 || STM32_SD_SPI_2B
+    default 0
+
 
 ######################################################################
 # Bootloader
@@ -346,7 +398,7 @@ choice
     config STM32_APP_START_8000
         bool "32KiB offset" if MACH_STM32F2 || MACH_STM32F4
     config STM32_APP_START_4000
-        bool "16KiB offset" if MACH_STM32F2 || MACH_STM32F4
+        bool "16KiB offset"
     config STM32_APP_START_2000
         bool "8KiB offset" if MACH_STM32F0 || MACH_STM32F1 || MACH_STM32G0
     config STM32_APP_START_1000
