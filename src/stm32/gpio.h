@@ -23,4 +23,13 @@ struct gpio_in gpio_in_setup(uint32_t pin, int32_t pull_up);
 void gpio_in_reset(struct gpio_in g, int32_t pull_up);
 uint8_t gpio_in_read(struct gpio_in g);
 
+struct spi_config {
+    void *spi;
+    uint32_t spi_cr1;
+};
+struct spi_config spi_setup(uint32_t bus, uint8_t mode, uint32_t rate);
+void spi_prepare(struct spi_config config);
+void spi_transfer(struct spi_config config, uint8_t receive_data
+                  , uint8_t len, uint8_t *data);
+
 #endif // gpio.h
