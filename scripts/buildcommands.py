@@ -300,6 +300,30 @@ int32_t button_gpio = %d, button_high = %d, button_pullup = %d; // "%s"
 
 Handlers.append(HandleButton())
 
+######################################################################
+# SDCARD SPI CS Pin
+######################################################################
+
+class HandleSdcardChipSelectPin:
+    def __init__(self):
+        self.pin = None
+        self.ctr_dispatch = { 'DECL_SD_SPI_CS_PIN': self.decl_cs_pin }
+    def decl_cs_pin(self, req):
+        pin = req.split(None, 1)[1].strip()
+        if pin.startswith('"') and pin.endswith('"'):
+            pin = pin[1:-1].strip()
+        self.pin = pin
+    def generate_code(self, options):
+        cs_gpio = 0
+        pin = self.pin
+        if pin:
+            cs_gpio = HandlerConstants.lookup_pin(pin)
+        fmt = """
+uint32_t sdcard_cs_gpio = %d; // "%s"
+"""
+        return fmt % (cs_gpio, self.pin)
+
+Handlers.append(HandleSdcardChipSelectPin())
 
 ######################################################################
 # Main code
