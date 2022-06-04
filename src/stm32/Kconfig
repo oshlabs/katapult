@@ -209,7 +209,19 @@ choice
     config STM32_SD_SPI_4
         bool "SPI4 (on PE13,PE14,PE12)" if MACH_STM32F401 || MACH_STM32F446
         select SDCARD_SPI
+    config SDCARD_SOFTWARE_SPI
+        bool "Software SPI"
+        select SDCARD_SPI
 endchoice
+config SWSPI_MISO_PIN
+    depends on SDCARD_SOFTWARE_SPI
+    string "Software SPI MISO Pin"
+config SWSPI_MOSI_PIN
+    depends on SDCARD_SOFTWARE_SPI
+    string "Sofware SPI MOSI Pin"
+config SWSPI_SCLK_PIN
+    depends on SDCARD_SOFTWARE_SPI
+    string "Software SPI SCLK Pin"
 config SD_SPI_CS_PIN
     depends on ENABLE_SDCARD
     string "SPI CS Pin"
