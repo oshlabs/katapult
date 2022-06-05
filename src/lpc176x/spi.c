@@ -72,7 +72,7 @@ spi_prepare(struct spi_config config)
 
 void
 spi_transfer(struct spi_config config, uint8_t receive_data
-             , uint8_t len, uint8_t *data)
+             , uint16_t len, uint8_t *data)
 {
     LPC_SSP_TypeDef *spi = config.spi;
     if (receive_data) {
