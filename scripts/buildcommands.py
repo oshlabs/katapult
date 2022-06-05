@@ -326,6 +326,46 @@ uint32_t sdcard_cs_gpio = %d; // "%s"
 Handlers.append(HandleSdcardChipSelectPin())
 
 ######################################################################
+# SDCARD SPI CS Pin
+######################################################################
+
+class HandleSoftwareSPIPins:
+    def __init__(self):
+        self.pins = {}
+        self.ctr_dispatch = {
+            'DECL_SWSPI_MOSI_PIN': self.decl_mosi_pin,
+            'DECL_SWSPI_MISO_PIN': self.decl_miso_pin,
+            'DECL_SWSPI_SCLK_PIN': self.decl_sclk_pin
+        }
+    def _parse_pin(self, req):
+        pin = req.split(None, 1)[1].strip()
+        if pin.startswith('"') and pin.endswith('"'):
+            pin = pin[1:-1].strip()
+        return pin
+    def decl_miso_pin(self, req):
+        self.pins["miso"] = self._parse_pin(req)
+    def decl_mosi_pin(self, req):
+        self.pins["mosi"] = self._parse_pin(req)
+    def decl_sclk_pin(self, req):
+        self.pins["sclk"] = self._parse_pin(req)
+    def generate_code(self, options):
+        args = []
+        for name in ["miso", "mosi", "sclk"]:
+            gpio = 0
+            pin = self.pins.get(name)
+            if pin:
+                gpio = HandlerConstants.lookup_pin(pin)
+            args.extend([gpio, pin])
+        fmt = """
+uint32_t swspi_miso_gpio = %d; // "%s"
+uint32_t swspi_mosi_gpio = %d; // "%s"
+uint32_t swspi_sclk_gpio = %d; // "%s"
+"""
+        return fmt % (*args,)
+
+Handlers.append(HandleSoftwareSPIPins())
+
+######################################################################
 # Main code
 ######################################################################
 
