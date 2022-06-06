@@ -177,6 +177,9 @@ config STM32F103GD_DISABLE_SWD
 config SDCARD_SPI
     bool
 
+config SDCARD_SOFTWARE_SPI
+    bool
+
 menu "SD Card Configuration"
     depends on HAVE_GPIO_SPI
 config ENABLE_SDCARD
@@ -209,9 +212,11 @@ choice
     config STM32_SD_SPI_4
         bool "SPI4 (on PE13,PE14,PE12)" if MACH_STM32F401 || MACH_STM32F446
         select SDCARD_SPI
-    config SDCARD_SOFTWARE_SPI
+    config STM32_SOFTWARE_SPI
         bool "Software SPI"
         select SDCARD_SPI
+        select SDCARD_SOFTWARE_SPI
+
 endchoice
 config SWSPI_MISO_PIN
     depends on SDCARD_SOFTWARE_SPI

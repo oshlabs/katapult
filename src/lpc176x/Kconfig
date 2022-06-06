@@ -57,6 +57,51 @@ config FLASH_START
     hex
     default 0x0000
 
+config SDCARD_SPI
+    bool
+
+config SDCARD_SOFTWARE_SPI
+    bool
+
+menu "SD Card Configuration"
+    depends on HAVE_GPIO_SPI
+config ENABLE_SDCARD
+    bool "Enable SD Card"
+    default n
+choice
+    depends on ENABLE_SDCARD
+    prompt "Interface"
+    config LPC_SD_SPI_SSP0
+        bool "SSP0 (on P0.17/P0.18/P0.15)"
+        select SDCARD_SPI
+    config LPC_SD_SPI_SSP1
+        bool "SSP1 (on P0.8/P0.9/P0.7)"
+        select SDCARD_SPI
+    config LPC_SOFTWARE_SPI
+        bool "Software SPI"
+        select SDCARD_SPI
+        select SDCARD_SOFTWARE_SPI
+endchoice
+config SWSPI_MISO_PIN
+    depends on SDCARD_SOFTWARE_SPI
+    string "Software SPI MISO Pin"
+config SWSPI_MOSI_PIN
+    depends on SDCARD_SOFTWARE_SPI
+    string "Sofware SPI MOSI Pin"
+config SWSPI_SCLK_PIN
+    depends on SDCARD_SOFTWARE_SPI
+    string "Software SPI SCLK Pin"
+config SD_SPI_CS_PIN
+    depends on ENABLE_SDCARD
+    string "SPI CS Pin"
+endmenu
+
+config SD_SPI_BUS
+    int
+    default 0 if LPC_SD_SPI_SSP0
+    default 1 if LPC_SD_SPI_SSP1
+    default 0
+
 config USBSERIAL
     bool
 config SERIAL

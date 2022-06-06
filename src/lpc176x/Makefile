@@ -20,6 +20,7 @@ src-y += ../lib/lpc176x/device/system_LPC17xx.c
 src-$(CONFIG_USBSERIAL) += lpc176x/usbserial.c lpc176x/chipid.c
 src-$(CONFIG_USBSERIAL) += generic/usb_cdc.c
 src-$(CONFIG_SERIAL) += lpc176x/serial.c generic/serial_irq.c
+src-$(CONFIG_SDCARD_SPI) += lpc176x/spi.c
 
 
 # Build the additional bin output file
