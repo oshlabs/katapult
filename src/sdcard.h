@@ -4,9 +4,14 @@
 #include <stdint.h>
 
 #define SDCMD_GO_IDLE_STATE     0
+#define SDCMD_ALL_SEND_CID      2
+#define SDCMD_SEND_REL_ADDR     3
+#define SDCMD_IO_SEND_OP_COND   5
+#define SDCMD_SEL_DESEL_CARD    7
 #define SDCMD_SEND_IF_COND      8
 #define SDCMD_SEND_CSD          9
 #define SDCMD_SEND_OP_COND      41
+#define SDCMD_SET_CLR_CD_DETECT 42
 #define SDCMD_SEND_STATUS       13
 #define SDCMD_SET_BLOCKLEN      16
 #define SDCMD_READ_SINGLE_BLOCK 17

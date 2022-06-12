@@ -180,6 +180,9 @@ config SDCARD_SPI
 config SDCARD_SOFTWARE_SPI
     bool
 
+config SDCARD_SDIO
+    bool
+
 menu "SD Card Configuration"
     depends on HAVE_GPIO_SPI
 config ENABLE_SDCARD
@@ -216,7 +219,9 @@ choice
         bool "Software SPI"
         select SDCARD_SPI
         select SDCARD_SOFTWARE_SPI
-
+    config STM32_SDIO
+        bool "SDIO (on PD2,PC8,PC9,PC10,PC11,PC12)" if MACH_STM32F103 || MACH_STM32F4
+        select SDCARD_SDIO
 endchoice
 config SWSPI_MISO_PIN
     depends on SDCARD_SOFTWARE_SPI
@@ -228,7 +233,7 @@ config SWSPI_SCLK_PIN
     depends on SDCARD_SOFTWARE_SPI
     string "Software SPI SCLK Pin"
 config SD_SPI_CS_PIN
-    depends on ENABLE_SDCARD
+    depends on SDCARD_SPI
     string "SPI CS Pin"
 endmenu
 

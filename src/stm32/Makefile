@@ -56,6 +56,7 @@ src-$(CONFIG_SERIAL) += $(serial-src-y) generic/serial_irq.c
 src-$(CONFIG_CANSERIAL) += stm32/can.c ../lib/fast-hash/fasthash.c
 src-$(CONFIG_CANSERIAL) += generic/canbus.c
 src-$(CONFIG_SDCARD_SPI) += stm32/spi.c
+src-$(CONFIG_SDCARD_SDIO) += stm32/sdio.c
 
 dirs-$(CONFIG_CANSERIAL) += lib/fast-hash
 
