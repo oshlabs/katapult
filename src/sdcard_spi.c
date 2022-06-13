@@ -83,7 +83,24 @@ calc_crc16(uint8_t *data, uint16_t length)
  *
  * ********************************************************/
 
-void
+static void
+spidev_setup(void)
+{
+    if (CONFIG_SDCARD_SOFTWARE_SPI)
+        spi_software_setup(0);
+    else
+        sd_spi.config = spi_setup(CONFIG_SD_SPI_BUS, 0, SPI_INIT_RATE);
+}
+
+static void
+spidev_set_rate(uint32_t rate)
+{
+    if (CONFIG_SDCARD_SOFTWARE_SPI)
+        return;
+    spi_set_rate(&(sd_spi.config), rate);
+}
+
+static void
 spidev_prepare(void)
 {
     if (CONFIG_SDCARD_SOFTWARE_SPI)
@@ -92,7 +109,7 @@ spidev_prepare(void)
         spi_prepare(sd_spi.config);
 }
 
-void
+static void
 spidev_transfer(uint8_t receive_data, uint16_t len, uint8_t *data)
 {
     if (CONFIG_SDCARD_SOFTWARE_SPI)
@@ -169,7 +186,7 @@ check_command(uint8_t cmd, uint32_t arg, uint8_t* buf, uint8_t flags,
             return 1;
         attempts--;
         if (attempts)
-            udelay(1000);
+            udelay((cmd == SDCMD_SEND_OP_COND) ? 100000 : 1000);
     }
     return 0;
 }
@@ -194,7 +211,7 @@ uint8_t
 sdcard_write_sector(uint8_t *buf, uint32_t sector)
 {
     if (!(sd_spi.flags & SDF_INITIALIZED))
-        return -1;
+        return 0;
     uint32_t offset = sector;
     if (!(sd_spi.flags & SDF_HIGH_CAPACITY))
         offset = sector * SD_SECTOR_SIZE;
@@ -304,7 +321,7 @@ uint8_t
 sdcard_read_sector(uint8_t *buf, uint32_t sector)
 {
     if (!(sd_spi.flags & SDF_INITIALIZED))
-        return -1;
+        return 0;
     uint32_t offset = sector;
     if (!(sd_spi.flags & SDF_HIGH_CAPACITY))
         offset = sector * SD_SECTOR_SIZE;
@@ -332,10 +349,7 @@ uint8_t
 sdcard_init(void)
 {
     sd_spi.cs_pin = gpio_out_setup(sdcard_cs_gpio, 1);
-    if (CONFIG_SDCARD_SOFTWARE_SPI)
-        spi_software_setup(0);
-    else
-        sd_spi.config = spi_setup(CONFIG_SD_SPI_BUS, 0, SPI_INIT_RATE);
+    spidev_setup();
     // per the spec, delay for 1ms and apply a minimum of 74 clocks
     // with CS high
     udelay(1000);
@@ -387,9 +401,9 @@ sdcard_init(void)
     }
 
     // Finsh init and come out of idle.  This can take some time,
-    // give up to 250 attempts
+    // give up to 20 attempts (100 ms delay between attempts)
     if (!check_command(SDCMD_SEND_OP_COND, (sd_ver == 1) ? 0 : (1 << 30),
-                       buf, CF_APP_CMD, 0, 250))
+                       buf, CF_APP_CMD, 0, 20))
     {
         sd_spi.err |= SDE_OP_COND_ERR;
         return 0;
@@ -414,8 +428,7 @@ sdcard_init(void)
         return 0;
     }
     sd_spi.flags |= SDF_INITIALIZED;
-    if (!CONFIG_SDCARD_SOFTWARE_SPI)
-        spi_set_rate(&(sd_spi.config), SPI_XFER_RATE);
+    spidev_set_rate(SPI_XFER_RATE);
     return 1;
 }
 
