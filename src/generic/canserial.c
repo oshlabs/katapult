@@ -15,6 +15,7 @@
 #include "command.h" // DECL_CONSTANT
 #include "fasthash.h" // fasthash64
 #include "sched.h" // sched_wake_task
+#include "board/armcm_timer.h" // udelay(uint32_t) and timer_read_time(void)
 
 #define CANBUS_UUID_LEN 6
 
