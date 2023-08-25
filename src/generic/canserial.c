@@ -151,6 +151,11 @@ can_process_query_unassigned(struct canbus_msg *msg)
     send.data[0] = CANBUS_RESP_NEED_NODEID;
     memcpy(&send.data[1], CanData.uuid, sizeof(CanData.uuid));
     send.data[7] = CANBUS_CMD_SET_CANBOOT_NODEID;
+
+    // hack introduce random delay of 0 upto about 0.5 sec (=500000 usec)
+    // in 19 bits (mask 0x7FFFF) fit max value 524287 which is about 500000
+    udelay(timer_read_time() & 0x7FFFF);
+
     // Send with retry
     for (;;) {
         int ret = canbus_send(&send);
